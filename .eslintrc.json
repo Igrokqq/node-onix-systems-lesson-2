@@ -1,0 +1,23 @@
+{
+    "extends": ["airbnb-base", "prettier", "plugin:node/recommended"],
+    "plugins": ["prettier"],
+    "rules": {
+        "prettier/prettier": [
+            "error",
+            {
+                "singleQuote": true
+            }
+        ],
+        "indent": [
+            "error",
+            4
+        ],
+        "strict": 0,
+        "no-var": "error",
+        "no-console": 0,
+        "quotes": [
+            "error",
+            "single"
+        ]
+    }
+}
