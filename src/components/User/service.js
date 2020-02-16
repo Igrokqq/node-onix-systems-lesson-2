@@ -54,7 +54,7 @@ module.exports = {
      * @returns {Promise<void>}
      */
     async updateById(id, fullName) {
-        await UserModel.findByIdAndUpdate(id, { fullName });
+        await UserModel.updateOne({ id }, { fullName });
     },
 
     /**

@@ -1,5 +1,6 @@
 const UserService = require('./service');
-const validation = require('./validation');
+const validationSchemas = require('./validation');
+const Joi = require('@hapi/joi');
 
 /**
  * @function
@@ -28,21 +29,20 @@ async function findAll(req, res, next) {
 async function findById(req, res, next) {
     try {
         const { id } = req.params;
-        const { error } = validation.patterns.personId.validate(id);
+        const { error } = validationSchemas.findByIdSchema.validate({ id });
 
-        // if this data have passed validation
-        if (error == null) {
-            const user = await UserService.findById(id);
-
-            res.status(200).json(user);
-        } else {
-            // prepare all errors descriptions in pretty view
-            const errorMessage = error.details
-                .map(detail => detail.message)
-                .join(',');
-
-            res.status(422).json(errorMessage);
+        /*
+            If we have an error then send 422 HTTP code
+            and show first error message which has appeared at
+            validation in json view
+         */
+        if (error != null) {
+            return res.status(422).json(error.details[0].message);
         }
+
+        const user = await UserService.findById(id);
+
+        res.status(200).json(user);
     } catch (error) {
         next(error);
     }
@@ -59,44 +59,27 @@ async function create(req, res, next) {
     try {
         const { email, fullName } = req.body;
 
-        const validatedData = {
-            personEmail: validation.patterns.email.validate(email),
-            personFullName: validation.patterns.fullName.validate(fullName)
-        };
+        const { error } = validationSchemas.createSchema.validate({
+            email,
+            fullName
+        });
 
-        // if this data have passed validation
-        if (
-            validatedData.personEmail.error == null &&
-            validatedData.personFullName.error == null
-        ) {
-            const foundUser = await UserService.findByEmail(email);
-
-            // if this user does exist
-            if (Object.keys(foundUser).length > 0) {
-                res.status(404).end('Such user already exists');
-            } else {
-                await UserService.create({
-                    fullName,
-                    email
-                });
-
-                res.status(200).end('User was successfully added to database');
-            }
-        } else {
-            // prepare all errors descriptions in pretty view
-            const personEmail = validatedData.personEmail.error.details
-                .map(detail => detail.message)
-                .join(',');
-
-            const personFullName = validatedData.personFullName.error.details
-                .map(detail => detail.message)
-                .join(',');
-
-            res.status(422).json({
-                personEmail,
-                personFullName
-            });
+        if (error != null) {
+            return res.status(422).json(error.details[0].message);
         }
+
+        const foundUser = await UserService.findByEmail(email);
+
+        if (Object.keys(foundUser).length > 0) {
+            return res.status(404).json('Such user already exists');
+        }
+
+        await UserService.create({
+            fullName,
+            email
+        });
+
+        res.status(200).json('User was successfully added to database');
     } catch (error) {
         next(error);
     }
@@ -113,43 +96,24 @@ async function updateById(req, res, next) {
     try {
         const { id, fullName } = req.body;
 
-        const validatedData = {
-            personId: validation.patterns.personId.validate(id),
-            personFullName: validation.patterns.fullName.validate(fullName)
-        };
+        const { error } = validationSchemas.updateByIdSchema.validate({
+            id,
+            fullName
+        });
 
-        // if this data have passed the validation
-        if (
-            validatedData.personId.error == null &&
-            validatedData.personFullName.error == null
-        ) {
-            const foundUser = await UserService.findById(id);
-
-            // if this user does exist
-            if (Object.keys(foundUser).length > 0) {
-                await UserService.updateById(id, fullName);
-
-                res.status(200).end(
-                    `User's profile ${id} was successfully updated`
-                );
-            } else {
-                res.status(404).end('This user does not exist');
-            }
-        } else {
-            // prepare all errors descriptions in pretty view
-            const personIdErrorDescription = validatedData.personId.error.details
-                .map(detail => detail.message)
-                .join(',');
-
-            const personFullNameErrorDescription = validatedData.personFullName.error.details
-                .map(detail => detail.message)
-                .join(',');
-
-            res.status(422).json({
-                personIdErrorDescription,
-                personFullNameErrorDescription
-            });
+        if (error != null) {
+            return res.status(422).json(error.details[0].message);
         }
+
+        const foundUser = await UserService.findById(id);
+
+        if (foundUser == null) {
+            return res.status(404).json('The user was not found');
+        }
+
+        await UserService.updateById(id, fullName);
+
+        res.status(200).json(`User's profile ${id} was successfully updated`);
     } catch (error) {
         next(error);
     }
@@ -166,28 +130,21 @@ async function deleteById(req, res, next) {
     try {
         const { id } = req.body;
 
-        const { error } = validation.patterns.personId.validate(id);
+        const { error } = validationSchemas.deleteById.validate({ id });
 
-        // if our data have passed validation
-        if (error == null) {
-            const foundUser = await UserService.findById(id);
-
-            // if this user does exist
-            if (Object.keys(foundUser).length > 0) {
-                await UserService.deleteById(id);
-
-                res.status(200).end(`User ${id} was successfully deleted`);
-            } else {
-                res.status(404).end('This user does not exist');
-            }
-        } else {
-            // prepare all errors descriptions in pretty view
-            const errorMessage = error.details
-                .map(detail => detail.message)
-                .join(',');
-
-            res.status(422).json(errorMessage);
+        if (error != null) {
+            return res.status(422).json(error.details[0].message);
         }
+
+        const foundUser = await UserService.findById(id);
+
+        if (foundUser == null) {
+            return res.status(404).json('The user was not found');
+        }
+
+        await UserService.deleteById(id);
+
+        res.status(200).json(`User ${id} was successfully deleted`);
     } catch (error) {
         next(error);
     }
