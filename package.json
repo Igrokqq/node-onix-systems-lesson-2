@@ -7,7 +7,7 @@
     ],
     "author": "Pavel Pavlov <igrokqq1991@ukr.net>",
     "scripts": {
-        "prettier": "node_modules/.bin/prettier --write \"**/*.js\" --ignore-pattern node_modules/",
+        "prettier": "node_modules/.bin/prettier --write --single-quote \"**/*.js\" --ignore-pattern node_modules/",
         "commit": "git-cz"
     },
     "dependencies": {
@@ -16,13 +16,14 @@
         "compression": "1.7.1",
         "cookie-parser": "1.4.3",
         "cors": "2.8.5",
+        "dotenv": "8.2.0",
         "eslint-config-airbnb": "18.0.1",
         "express": "4.16.2",
         "helmet": "3.9.0",
         "mongoose": "5.7.5"
     },
     "devDependencies": {
-        "cz-conventional-changelog": "^3.1.0",
+        "cz-conventional-changelog": "3.1.0",
         "eslint": "6.8.0",
         "eslint-config-airbnb-base": "14.0.0",
         "eslint-config-prettier": "6.10.0",
