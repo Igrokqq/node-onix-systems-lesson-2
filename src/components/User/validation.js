@@ -11,10 +11,6 @@ const fullName = Joi.string()
   .max(30)
   .required();
 
-// console.log(email.validate('lolukr.net', (err, val) => {
-//     console.log(err || {}, val);
-// }));
-
 module.exports = {
   patterns: {
     personId,
