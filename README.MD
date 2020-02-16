@@ -37,3 +37,6 @@
 ``` 
    npm run commit 
 ```
+
+### Notice 
+All responses from api in json view. 
