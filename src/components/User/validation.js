@@ -1,43 +1,30 @@
-const Joi = require('@hapi/joi');
+const customJoi = require('../../plugins/joi/index.js');
 
-// personId from mongo that stores in string view
-const personId = Joi.string();
-
-const email = Joi.string().email();
-
-const findByIdSchema = Joi.object().keys({
-    id: Joi.string()
-        .min(1)
-        .max(24)
-        .required()
+const findByIdSchema = customJoi.object({
+    id: customJoi.objectId()
 });
 
-const createSchema = Joi.object().keys({
-    email: Joi.string()
+const createSchema = customJoi.object({
+    email: customJoi.string()
         .email()
         .required(),
-    fullName: Joi.string()
+    fullName: customJoi.string()
         .min(1)
         .max(30)
         .required()
 });
 
-const updateByIdSchema = Joi.object().keys({
-    id: Joi.string()
-        .min(1)
-        .max(24)
-        .required(),
-    fullName: Joi.string()
+const updateByIdSchema = customJoi.object({
+    id: customJoi.objectId(),
+    fullName: customJoi.string()
         .min(1)
         .max(30)
         .required()
 });
 
-const deleteById = Joi.object().keys({
-    id: Joi.string()
-        .min(1)
-        .max(24)
-        .required()
+
+const deleteByIdSchema = customJoi.object({
+    id: customJoi.objectId()
 });
 
 /**
@@ -49,7 +36,7 @@ const schemas = {
     findByIdSchema,
     createSchema,
     updateByIdSchema,
-    deleteById
+    deleteByIdSchema
 };
 
 module.exports = schemas;
