@@ -5,10 +5,12 @@ const findByIdSchema = customJoi.object({
 });
 
 const createSchema = customJoi.object({
-    email: customJoi.string()
+    email: customJoi
+        .string()
         .email()
         .required(),
-    fullName: customJoi.string()
+    fullName: customJoi
+        .string()
         .min(1)
         .max(30)
         .required()
@@ -16,12 +18,12 @@ const createSchema = customJoi.object({
 
 const updateByIdSchema = customJoi.object({
     id: customJoi.objectId(),
-    fullName: customJoi.string()
+    fullName: customJoi
+        .string()
         .min(1)
         .max(30)
         .required()
 });
-
 
 const deleteByIdSchema = customJoi.object({
     id: customJoi.objectId()

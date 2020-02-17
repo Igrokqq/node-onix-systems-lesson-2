@@ -93,18 +93,20 @@ async function create(req, res, next) {
         await UserService.create({
             fullName,
             email
-        }).then(() => {
-            res.status(200).json('User was successfully added to database');
-        }).catch(err => {
-            throw new MongoCreateError(err);
-        });
+        })
+            .then(() => {
+                res.status(200).json('User was successfully added to database');
+            })
+            .catch(err => {
+                throw new MongoCreateError(err);
+            });
     } catch (error) {
         if (error instanceof ValidationError) {
             return res.status(422).json(error.message);
         }
 
         if (
-            error instanceof UserDoesExist  ||
+            error instanceof UserDoesExist ||
             error instanceof MongoCreateError ||
             error instanceof MongoReadError
         ) {
@@ -125,7 +127,10 @@ async function create(req, res, next) {
 async function updateById(req, res, next) {
     try {
         const { id, fullName } = req.body;
-        const { error } = validationSchemas.updateByIdSchema.validate({ id, fullName });
+        const { error } = validationSchemas.updateByIdSchema.validate({
+            id,
+            fullName
+        });
 
         if (error) {
             throw new ValidationError(error.details[0].message);
@@ -142,7 +147,11 @@ async function updateById(req, res, next) {
             });
 
         await UserService.updateById(id, fullName)
-            .then(() => res.status(200).json(`User's profile ${id} was successfully updated`))
+            .then(() =>
+                res
+                    .status(200)
+                    .json(`User's profile ${id} was successfully updated`)
+            )
             .catch(err => {
                 throw new MongoUpdateError(err);
             });
@@ -153,7 +162,7 @@ async function updateById(req, res, next) {
 
         if (
             error instanceof UserDoesNotExistError ||
-            error instanceof MongoUpdateError      ||
+            error instanceof MongoUpdateError ||
             error instanceof MongoReadError
         ) {
             return res.status(404).json(error.message);
@@ -190,7 +199,9 @@ async function deleteById(req, res, next) {
             });
 
         await UserService.deleteById(id)
-            .then(() => res.status(200).json(`User ${id} was successfully deleted`))
+            .then(() =>
+                res.status(200).json(`User ${id} was successfully deleted`)
+            )
             .catch(err => {
                 throw new MongoDeleteError(err);
             });
@@ -200,7 +211,7 @@ async function deleteById(req, res, next) {
         }
 
         if (
-            error instanceof MongoReadError   ||
+            error instanceof MongoReadError ||
             error instanceof MongoDeleteError ||
             error instanceof UserDoesNotExistError
         ) {

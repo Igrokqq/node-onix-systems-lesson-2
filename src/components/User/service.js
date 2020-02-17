@@ -21,7 +21,8 @@ async function findAll() {
  * @returns {Promise<UserModel>}
  */
 async function findById(id) {
-    return await UserModel.findById(id).exec()
+    return await UserModel.findById(id)
+        .exec()
         .then(res => Promise.resolve(res))
         .catch(err => Promise.reject(new MongoReadError(err)));
 }
@@ -47,7 +48,8 @@ async function create(profile) {
  * @returns {Promise<UserModel>}
  */
 async function findByEmail(email) {
-    return await UserModel.findOne({ email }).exec()
+    return await UserModel.findOne({ email })
+        .exec()
         .then(res => Promise.resolve(res))
         .catch(err => Promise.reject(new MongoReadError(err)));
 }
@@ -61,7 +63,8 @@ async function findByEmail(email) {
  * @returns {Promise<void>}
  */
 async function updateById(id, fullName) {
-    return await UserModel.updateOne({ id }, { fullName }).exec()
+    return await UserModel.updateOne({ id }, { fullName })
+        .exec()
         .then(res => Promise.resolve(res))
         .catch(err => Promise.reject(err));
 }
@@ -74,7 +77,8 @@ async function updateById(id, fullName) {
  * @returns {Promise<void>}
  */
 async function deleteById(id) {
-    await UserModel.findByIdAndDelete(id).exec()
+    await UserModel.findByIdAndDelete(id)
+        .exec()
         .then(res => Promise.resolve(res))
         .catch(err => Promise.reject(err));
 }
