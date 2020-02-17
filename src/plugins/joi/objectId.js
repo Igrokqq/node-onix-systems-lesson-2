@@ -1,3 +1,5 @@
+const { Types } = require('mongoose');
+
 function objectId(joi) {
     return {
         type: 'objectId',

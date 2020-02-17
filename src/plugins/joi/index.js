@@ -1,5 +1,9 @@
 const Joi = require('@hapi/joi');
-const customMethods = require('./customValidationMethods/index.js');
+const objectId = require('./objectId');
+
+const customMethods = [
+    objectId
+];
 
 const customJoi = Joi.extend(...customMethods);
 
