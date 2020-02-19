@@ -1,7 +1,16 @@
+/**
+ * @exports
+ * @extends Error
+ */
 class ValidationError extends Error {
+    /**
+     * @constructor
+     * @param {object} message
+     */
     constructor(message) {
-        super(message);
-        this.name = 'ValidationError';
+        super();
+        this.message = message;
+        this.name = 'E_INVALID_PARAM';
     }
 }
 
