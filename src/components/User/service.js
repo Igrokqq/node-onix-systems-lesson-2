@@ -1,6 +1,4 @@
 const UserModel = require('./model');
-const MongoCreateError = require('../../exceptions/MongoCreateError');
-const MongoReadError = require('../../exceptions/MongoReadError');
 
 /**
  * @exports
@@ -10,7 +8,7 @@ const MongoReadError = require('../../exceptions/MongoReadError');
  * @returns Promise<UserModel[]>
  */
 async function findAll() {
-    return await UserModel.find({});
+    return await UserModel.find({}).exec();
 }
 
 /**
@@ -21,10 +19,7 @@ async function findAll() {
  * @returns {Promise<UserModel>}
  */
 async function findById(id) {
-    return await UserModel.findById(id)
-        .exec()
-        .then(res => Promise.resolve(res))
-        .catch(err => Promise.reject(new MongoReadError(err)));
+    return await UserModel.findById(id).exec();
 }
 
 /**
@@ -35,9 +30,7 @@ async function findById(id) {
  * @returns {Promise<UserModel>}
  */
 async function create(profile) {
-    return await UserModel.create(profile)
-        .then(res => Promise.resolve(res))
-        .catch(err => Promise.reject(new MongoCreateError(err)));
+    return await UserModel.create(profile);
 }
 
 /**
@@ -48,39 +41,31 @@ async function create(profile) {
  * @returns {Promise<UserModel>}
  */
 async function findByEmail(email) {
-    return await UserModel.findOne({ email })
-        .exec()
-        .then(res => Promise.resolve(res))
-        .catch(err => Promise.reject(new MongoReadError(err)));
+    return await UserModel.findOne({ email }).exec();
 }
 
 /**
+ * Find a user by id and update his profile
  * @exports
  * @method updateById
- * @param {string} id
- * @param {string} fullName
+ * @param {string} _id
+ * @param {object} newProfile
  * @summary update a user's profile
  * @returns {Promise<void>}
  */
-async function updateById(id, fullName) {
-    return await UserModel.updateOne({ id }, { fullName })
-        .exec()
-        .then(res => Promise.resolve(res))
-        .catch(err => Promise.reject(err));
+async function updateById(_id, newProfile) {
+    return await UserModel.updateOne({ _id }, newProfile).exec();
 }
 
 /**
  * @exports
  * @method deleteById
- * @param {string} id
+ * @param {string} _id
  * @summary delete a user from database
  * @returns {Promise<void>}
  */
-async function deleteById(id) {
-    await UserModel.findByIdAndDelete(id)
-        .exec()
-        .then(res => Promise.resolve(res))
-        .catch(err => Promise.reject(err));
+async function deleteById(_id) {
+    return await UserModel.deleteOne({ _id }).exec();
 }
 
 module.exports = {

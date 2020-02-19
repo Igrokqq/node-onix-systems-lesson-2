@@ -1,44 +1,75 @@
-const customJoi = require('../../plugins/joi/index.js');
-
-const findByIdSchema = customJoi.object({
-    id: customJoi.objectId()
-});
-
-const createSchema = customJoi.object({
-    email: customJoi
-        .string()
-        .email()
-        .required(),
-    fullName: customJoi
-        .string()
-        .min(1)
-        .max(30)
-        .required()
-});
-
-const updateByIdSchema = customJoi.object({
-    id: customJoi.objectId(),
-    fullName: customJoi
-        .string()
-        .min(1)
-        .max(30)
-        .required()
-});
-
-const deleteByIdSchema = customJoi.object({
-    id: customJoi.objectId()
-});
+const Validation = require('../validation');
 
 /**
- * @description Serves validation's schemas
  * @exports
- * @type {{findByIdSchema: *, createSchema: *}}
+ * @class
+ * @extends Validation
  */
-const schemas = {
-    findByIdSchema,
-    createSchema,
-    updateByIdSchema,
-    deleteByIdSchema
-};
+class UserValidation extends Validation {
+    /**
+     * @constructor
+     */
+    constructor() {
+        super();
+    }
 
-module.exports = schemas;
+    /**
+     * @param {object} data
+     * @returns {{Object}}
+     */
+    findById(data) {
+        return this.customJoi
+            .object({
+                id: this.customJoi.objectId()
+            })
+            .validate(data);
+    }
+
+    /**
+     * @param {object} profile
+     * @returns {{Object}}
+     */
+    create(profile) {
+        return this.customJoi
+            .object({
+                email: this.customJoi.string().email(),
+                fullName: this.customJoi
+                    .string()
+                    .min(1)
+                    .max(30)
+                    .required()
+            })
+            .validate(profile);
+    }
+
+    /**
+     * @param {object} data
+     * @returns {{Object}}
+     */
+    updateById(data) {
+        return this.customJoi
+            .object({
+                id: this.customJoi.objectId(),
+                fullName: this.customJoi
+                    .string()
+                    .min(1)
+                    .max(30)
+                    .required()
+            })
+            .validate(data);
+    }
+
+    /**
+     * @param {object} data
+     * @returns {{Object}}
+     */
+    deleteById(data) {
+        return this.customJoi
+            .object({
+                id: this.customJoi.objectId()
+            })
+            .validate(data);
+    }
+}
+
+module.exports = new UserValidation();

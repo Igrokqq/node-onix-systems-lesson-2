@@ -1,13 +1,6 @@
 const UserService = require('./service');
-const validationSchemas = require('./validation');
-const Joi = require('@hapi/joi');
-const ValidationError = require('../../exceptions/ValidationError');
-const UserDoesExist = require('../../exceptions/UserDoesExist');
-const UserDoesNotExistError = require('../../exceptions/UserDoesNotExistError');
-const MongoCreateError = require('../../exceptions/MongoCreateError');
-const MongoReadError = require('../../exceptions/MongoReadError');
-const MongoUpdateError = require('../../exceptions/MongoUpdateError');
-const MongoDeleteError = require('../../exceptions/MongoDeleteError');
+const UserValidation = require('./validation');
+const ValidationError = require('../../error/ValidationError');
 
 /**
  * @function
@@ -20,9 +13,17 @@ async function findAll(req, res, next) {
     try {
         const users = await UserService.findAll();
 
-        res.status(200).json(users);
+        return res.status(200).json({
+            message: '',
+            data: users,
+            statusCode: 200
+        });
     } catch (error) {
-        next(error);
+        return res.status(400).json({
+            message: error.message,
+            details: null,
+            statusCode: 400
+        });
     }
 }
 
@@ -35,28 +36,33 @@ async function findAll(req, res, next) {
  */
 async function findById(req, res, next) {
     try {
-        const { id } = req.params;
-        const { error } = validationSchemas.findByIdSchema.validate({ id });
+        const { error } = UserValidation.findById(req.params);
 
         if (error) {
-            throw new ValidationError(error.details[0].message);
+            throw new ValidationError(error.details);
         }
 
-        await UserService.findById(id)
-            .then(user => res.status(200).json(user))
-            .catch(err => {
-                throw new MongoReadError(err);
-            });
+        const user = await UserService.findById(req.params.id);
+
+        return res.status(200).json({
+            message: 'User successfully was found',
+            data: user,
+            statusCode: 200
+        });
     } catch (error) {
         if (error instanceof ValidationError) {
-            return res.status(422).json(error.message);
+            return res.status(422).json({
+                message: error.name,
+                details: error.message,
+                statusCode: 422
+            });
         }
 
-        if (error instanceof MongoReadError) {
-            return res.status(400).json(error.message);
-        }
-
-        next(error);
+        return res.status(400).json({
+            message: error.message,
+            details: null,
+            statusCode: 400
+        });
     }
 }
 
@@ -69,51 +75,39 @@ async function findById(req, res, next) {
  */
 async function create(req, res, next) {
     try {
-        const { email, fullName } = req.body;
-
-        const { error } = validationSchemas.createSchema.validate({
-            email,
-            fullName
-        });
+        const { error } = UserValidation.create(req.body);
 
         if (error) {
-            throw new ValidationError(error.details[0].message);
+            throw new ValidationError(error.details);
         }
 
-        const userDoesExist = await UserService.findByEmail(email)
-            .then(foundUser => foundUser != null)
-            .catch(err => {
-                throw new MongoReadError(err);
-            });
+        const foundUser = await UserService.findByEmail(req.body.email);
 
-        if (userDoesExist) {
-            throw new UserDoesExist('Such user already exists');
+        if (foundUser != null) {
+            throw new Error('Such user does exist');
         }
 
-        await UserService.create({
-            fullName,
-            email
-        })
-            .then(() => {
-                res.status(200).json('User was successfully added to database');
-            })
-            .catch(err => {
-                throw new MongoCreateError(err);
-            });
+        const user = await UserService.create(req.body);
+
+        return res.status(200).json({
+            message: 'User was successfully created',
+            data: user,
+            statusCode: 200
+        });
     } catch (error) {
         if (error instanceof ValidationError) {
-            return res.status(422).json(error.message);
+            return res.status(422).json({
+                message: error.name,
+                details: error.message,
+                statusCode: 422
+            });
         }
 
-        if (
-            error instanceof UserDoesExist ||
-            error instanceof MongoCreateError ||
-            error instanceof MongoReadError
-        ) {
-            return res.status(400).json(error.message);
-        }
-
-        next(error);
+        return res.status(400).json({
+            message: error.message,
+            details: null,
+            statusCode: 400
+        });
     }
 }
 
@@ -126,49 +120,33 @@ async function create(req, res, next) {
  */
 async function updateById(req, res, next) {
     try {
-        const { id, fullName } = req.body;
-        const { error } = validationSchemas.updateByIdSchema.validate({
-            id,
-            fullName
-        });
+        const { error } = UserValidation.updateById(req.body);
 
         if (error) {
-            throw new ValidationError(error.details[0].message);
+            throw new ValidationError(error.details);
         }
 
-        await UserService.findById(id)
-            .then(user => {
-                if (user == null) {
-                    throw new UserDoesNotExistError('The user was not found');
-                }
-            })
-            .catch(err => {
-                throw new MongoReadError(err);
-            });
+        const updatedUser = await UserService.updateById(req.body.id, req.body);
 
-        await UserService.updateById(id, fullName)
-            .then(() =>
-                res
-                    .status(200)
-                    .json(`User's profile ${id} was successfully updated`)
-            )
-            .catch(err => {
-                throw new MongoUpdateError(err);
-            });
+        return res.status(200).json({
+            message: 'User was successfully updated',
+            data: updatedUser,
+            statusCode: 200
+        });
     } catch (error) {
         if (error instanceof ValidationError) {
-            return res.status(422).json(error.message);
+            return res.status(422).json({
+                message: error.name,
+                details: error.message,
+                statusCode: 422
+            });
         }
 
-        if (
-            error instanceof UserDoesNotExistError ||
-            error instanceof MongoUpdateError ||
-            error instanceof MongoReadError
-        ) {
-            return res.status(404).json(error.message);
-        }
-
-        next(error);
+        return res.status(400).json({
+            message: error.message,
+            details: null,
+            statusCode: 400
+        });
     }
 }
 
@@ -181,44 +159,33 @@ async function updateById(req, res, next) {
  */
 async function deleteById(req, res, next) {
     try {
-        const { id } = req.body;
-        const { error } = validationSchemas.deleteByIdSchema.validate({ id });
+        const { error } = UserValidation.deleteById(req.body);
 
         if (error) {
-            throw new ValidationError(error.details[0].message);
+            throw new ValidationError(error.details);
         }
 
-        await UserService.findById(id)
-            .then(user => {
-                if (user == null) {
-                    throw new UserDoesNotExistError('The user was not found');
-                }
-            })
-            .catch(err => {
-                throw new MongoReadError(err);
-            });
+        const deletedUser = await UserService.deleteById(req.body.id);
 
-        await UserService.deleteById(id)
-            .then(() =>
-                res.status(200).json(`User ${id} was successfully deleted`)
-            )
-            .catch(err => {
-                throw new MongoDeleteError(err);
-            });
+        return res.status(200).json({
+            message: 'User was successfully deleted',
+            data: deletedUser,
+            statusCode: 200
+        });
     } catch (error) {
         if (error instanceof ValidationError) {
-            return res.status(422).json(error.message);
+            return res.status(422).json({
+                message: error.name,
+                details: error.message,
+                statusCode: 422
+            });
         }
 
-        if (
-            error instanceof MongoReadError ||
-            error instanceof MongoDeleteError ||
-            error instanceof UserDoesNotExistError
-        ) {
-            return res.status(404).json(error.message);
-        }
-
-        next(error);
+        return res.status(400).json({
+            message: error.message,
+            details: null,
+            statusCode: 400
+        });
     }
 }
 
