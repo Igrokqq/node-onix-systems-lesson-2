@@ -37,6 +37,10 @@
 ``` 
    npm run commit 
 ```
+### Run server
+``` 
+   npm run start
+```
 
 ### Notice 
 All responses from api in json view. 
