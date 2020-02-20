@@ -39,9 +39,10 @@ function onListening() {
  * @function
  * @inner
  * @param {http.Server} Server
+ * @param {number} port
  */
-function bind(Server) {
-    Server.on('error', error => this.onError(error, server.get('port')));
+function bind(Server, port) {
+    Server.on('error', error => this.onError(error, port));
     Server.on('listening', this.onListening.bind(Server));
 }
 
