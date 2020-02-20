@@ -29,9 +29,9 @@
  necessary data: id 
 ```
 
-### Format with prettier all files 
+### Format src folder 
 ``` 
-   npm run prettier
+   npm run format
 ```
 ### Commit 
 ``` 
