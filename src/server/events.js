@@ -29,8 +29,7 @@ function onError(error, port) {
  */
 function onListening() {
     const addr = this.address();
-    const bind =
-        typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
+    const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
 
     console.log(`Listening on ${bind}`);
 }

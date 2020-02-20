@@ -1,5 +1,5 @@
 {
-    "extends": ["airbnb-base/legacy", "prettier", "plugin:node/recommended"],
+    "extends": ["airbnb-base", "prettier", "plugin:node/recommended"],
     "plugins": ["prettier"],
     "env": {
         "es6": true,
@@ -12,11 +12,7 @@
                 "singleQuote": true
             }
         ],
-        "max-len": ["error", {
-            "code": 80,
-            "ignoreStrings": true,
-            "ignoreComments": true
-        }],
+        "max-len": "warn",
         "strict": 0,
         "no-var": "error",
         "no-console": 0,
@@ -27,6 +23,7 @@
         "no-shadow": "warn",
         "no-process-exit": "warn",
         "no-return-await": "off",
-        "no-unused-vars": "warn"
+        "no-unused-vars": "warn",
+        "no-useless-constructor": "warn"
     }
 }
