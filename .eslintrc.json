@@ -12,6 +12,11 @@
                 "singleQuote": true
             }
         ],
+        "max-len": ["error", {
+            "code": 80,
+            "ignoreStrings": true,
+            "ignoreComments": true
+        }],
         "strict": 0,
         "no-var": "error",
         "no-console": 0,
