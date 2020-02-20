@@ -7,7 +7,6 @@
     ],
     "author": "Pavel Pavlov <igrokqq1991@ukr.net>",
     "scripts": {
-        "prettier": "node_modules/.bin/prettier --write --single-quote \"**/*.js\" --ignore-pattern node_modules/",
         "format": "prettier --write '**/*.js' && eslint --fix '**/*.js'",
         "commit": "git-cz",
         "start": "node src/server/index.js"
