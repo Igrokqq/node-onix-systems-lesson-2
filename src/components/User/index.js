@@ -13,17 +13,19 @@ async function findAll(req, res, next) {
     try {
         const users = await UserService.findAll();
 
-        return res.status(200).json({
+        res.status(200).json({
             message: '',
             data: users,
             statusCode: 200
         });
     } catch (error) {
-        return res.status(400).json({
+        res.status(500).json({
             message: error.message,
             details: null,
-            statusCode: 400
+            statusCode: 500
         });
+
+        next(error);
     }
 }
 
@@ -44,25 +46,29 @@ async function findById(req, res, next) {
 
         const user = await UserService.findById(req.params.id);
 
-        return res.status(200).json({
+        res.status(200).json({
             message: 'User successfully was found',
             data: user,
             statusCode: 200
         });
     } catch (error) {
         if (error instanceof ValidationError) {
-            return res.status(422).json({
+            res.status(500).json({
                 message: error.name,
                 details: error.message,
-                statusCode: 422
+                statusCode: 500
             });
+
+            return next(error);
         }
 
-        return res.status(400).json({
+        res.status(500).json({
             message: error.message,
             details: null,
-            statusCode: 400
+            statusCode: 500
         });
+
+        next(error);
     }
 }
 
@@ -81,33 +87,31 @@ async function create(req, res, next) {
             throw new ValidationError(error.details);
         }
 
-        const foundUser = await UserService.findByEmail(req.body.email);
-
-        if (foundUser != null) {
-            throw new Error('Such user does exist');
-        }
-
         const user = await UserService.create(req.body);
 
-        return res.status(200).json({
+        res.status(200).json({
             message: 'User was successfully created',
             data: user,
             statusCode: 200
         });
     } catch (error) {
         if (error instanceof ValidationError) {
-            return res.status(422).json({
+            res.status(500).json({
                 message: error.name,
                 details: error.message,
-                statusCode: 422
+                statusCode: 500
             });
+
+            return next(error);
         }
 
-        return res.status(400).json({
+        res.status(500).json({
             message: error.message,
             details: null,
-            statusCode: 400
+            statusCode: 500
         });
+
+        next(error);
     }
 }
 
@@ -126,27 +130,33 @@ async function updateById(req, res, next) {
             throw new ValidationError(error.details);
         }
 
-        const updatedUser = await UserService.updateById(req.body.id, req.body);
+        const updatedUser = await UserService.updateById(req.body.id, {
+            fullName: req.body.fullName
+        });
 
-        return res.status(200).json({
+        res.status(200).json({
             message: 'User was successfully updated',
             data: updatedUser,
             statusCode: 200
         });
     } catch (error) {
         if (error instanceof ValidationError) {
-            return res.status(422).json({
+            res.status(500).json({
                 message: error.name,
                 details: error.message,
-                statusCode: 422
+                statusCode: 500
             });
+
+            return next(error);
         }
 
-        return res.status(400).json({
+        res.status(500).json({
             message: error.message,
             details: null,
-            statusCode: 400
+            statusCode: 500
         });
+
+        next(error);
     }
 }
 
@@ -167,25 +177,29 @@ async function deleteById(req, res, next) {
 
         const deletedUser = await UserService.deleteById(req.body.id);
 
-        return res.status(200).json({
+        res.status(200).json({
             message: 'User was successfully deleted',
             data: deletedUser,
             statusCode: 200
         });
     } catch (error) {
         if (error instanceof ValidationError) {
-            return res.status(422).json({
+            res.status(500).json({
                 message: error.name,
                 details: error.message,
-                statusCode: 422
+                statusCode: 500
             });
+
+            return next(error);
         }
 
-        return res.status(400).json({
+        res.status(500).json({
             message: error.message,
             details: null,
-            statusCode: 400
+            statusCode: 500
         });
+
+        next(error);
     }
 }
 
