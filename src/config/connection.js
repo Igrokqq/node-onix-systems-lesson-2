@@ -11,6 +11,8 @@ const connectOptions = {
     // for reconnectTries times
     reconnectTries: Number.MAX_VALUE,
     reconnectInterval: 1000,
+    // change default collection.ensureIndex on collection.createIndex.
+    useCreateIndex: true,
     // flag to allow users to fall back to the old
     // parser if they find a bug in the new parse
     useNewUrlParser: true,
