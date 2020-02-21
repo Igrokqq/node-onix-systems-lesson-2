@@ -25,7 +25,7 @@ async function findAll(req, res, next) {
             statusCode: 500
         });
 
-        next(error);
+        return next(error);
     }
 }
 
@@ -53,13 +53,11 @@ async function findById(req, res, next) {
         });
     } catch (error) {
         if (error instanceof ValidationError) {
-            res.status(500).json({
+            return res.status(422).json({
                 message: error.name,
                 details: error.message,
-                statusCode: 500
+                statusCode: 422
             });
-
-            return next(error);
         }
 
         res.status(500).json({
@@ -68,7 +66,7 @@ async function findById(req, res, next) {
             statusCode: 500
         });
 
-        next(error);
+        return next(error);
     }
 }
 
@@ -89,20 +87,18 @@ async function create(req, res, next) {
 
         const user = await UserService.create(req.body);
 
-        res.status(200).json({
+        return res.status(200).json({
             message: 'User was successfully created',
             data: user,
             statusCode: 200
         });
     } catch (error) {
         if (error instanceof ValidationError) {
-            res.status(500).json({
+            return res.status(422).json({
                 message: error.name,
                 details: error.message,
-                statusCode: 500
+                statusCode: 422
             });
-
-            return next(error);
         }
 
         res.status(500).json({
@@ -111,7 +107,7 @@ async function create(req, res, next) {
             statusCode: 500
         });
 
-        next(error);
+        return next(error);
     }
 }
 
@@ -134,20 +130,18 @@ async function updateById(req, res, next) {
             fullName: req.body.fullName
         });
 
-        res.status(200).json({
+        return res.status(200).json({
             message: 'User was successfully updated',
             data: updatedUser,
             statusCode: 200
         });
     } catch (error) {
         if (error instanceof ValidationError) {
-            res.status(500).json({
+            return res.status(422).json({
                 message: error.name,
                 details: error.message,
-                statusCode: 500
+                statusCode: 422
             });
-
-            return next(error);
         }
 
         res.status(500).json({
@@ -156,7 +150,7 @@ async function updateById(req, res, next) {
             statusCode: 500
         });
 
-        next(error);
+        return next(error);
     }
 }
 
@@ -177,20 +171,18 @@ async function deleteById(req, res, next) {
 
         const deletedUser = await UserService.deleteById(req.body.id);
 
-        res.status(200).json({
+        return res.status(200).json({
             message: 'User was successfully deleted',
             data: deletedUser,
             statusCode: 200
         });
     } catch (error) {
         if (error instanceof ValidationError) {
-            res.status(500).json({
+            return res.status(422).json({
                 message: error.name,
                 details: error.message,
-                statusCode: 500
+                statusCode: 422
             });
-
-            return next(error);
         }
 
         res.status(500).json({
@@ -199,7 +191,7 @@ async function deleteById(req, res, next) {
             statusCode: 500
         });
 
-        next(error);
+        return next(error);
     }
 }
 
