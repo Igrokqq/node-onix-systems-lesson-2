@@ -12,18 +12,20 @@
                 "singleQuote": true
             }
         ],
+        "consistent-return": "warn",
         "max-len": "warn",
         "strict": 0,
-        "no-var": "error",
-        "no-console": 0,
         "quotes": [
             "error",
             "single"
         ],
+        "no-console": 0,
+        "no-var": "error",
         "no-shadow": "warn",
         "no-process-exit": "warn",
         "no-return-await": "off",
         "no-unused-vars": "warn",
-        "no-useless-constructor": "warn"
+        "no-useless-constructor": "warn",
+        "no-useless-concat": "warn"
     }
 }
